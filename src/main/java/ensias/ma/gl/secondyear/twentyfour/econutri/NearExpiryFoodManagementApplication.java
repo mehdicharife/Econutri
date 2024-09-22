@@ -1,4 +1,4 @@
-package ensias.ma.gl.secondyear.twentyfour.near_expiry_food_management;
+package ensias.ma.gl.secondyear.twentyfour.econutri;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
