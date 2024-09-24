@@ -1,0 +1,28 @@
+services:
+
+  database:
+    image: postgres
+    restart: on-failure
+    ports:
+      - $DB_LOCAL_PORT:$DB_DOCKER_PORT
+    environment:
+      - POSTGRES_USER=$DB_USER
+      - POSTGRES_PASSWORD=$DB_USER_PASSWORD
+      - POSTGRES_DB=$DB_NAME
+  
+  api:
+    depends_on:
+      - database 
+    build:
+      context: .
+    restart: no
+    ports:
+      - $API_LOCAL_PORT:$API_DOCKER_PORT
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://database:$DB_DOCKER_PORT/$DB_NAME
+      - SPRING_DATASOURCE_USERNAME=$DB_USER
+      - SPRING_DATASOURCE_PASSWORD=$DB_USER_PASSWORD
+
+      - SPRING_APPLICATION_JSON=$SPRING_APPLICATION_JSON
+    volumes:
+      - .:/app
