@@ -1,0 +1,22 @@
+{"properties": [
+  {
+    "name": "jwt.signingKey",
+    "type": "java.lang.String",
+    "description": "A description for 'jwt.signingKey'"
+  },
+  {
+    "name": "jwt.lifespan",
+    "type": "java.lang.String",
+    "description": "A description for 'jwt.lifespan'"
+  },
+  {
+    "name": "adminPassword",
+    "type": "java.lang.String",
+    "description": "A description for 'adminPassword'"
+  },
+  {
+    "name": "adminEmail",
+    "type": "java.lang.String",
+    "description": "A description for 'adminEmail'"
+  }
+]}

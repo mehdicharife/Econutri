@@ -1,4 +1,4 @@
-package ensias.ma.gl.secondyear.twentyfour.near_expiry_food_management;
+package ensias.ma.gl.secondyear.twentyfour.econutri;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
