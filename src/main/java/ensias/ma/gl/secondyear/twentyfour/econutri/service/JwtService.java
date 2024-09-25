@@ -2,19 +2,22 @@ package ensias.ma.gl.secondyear.twentyfour.econutri.service;
 
 import java.util.Date;
 
+import javax.crypto.SecretKey;
+
 import java.nio.charset.StandardCharsets;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
-
-import ensias.ma.gl.secondyear.twentyfour.econutri.exception.EmailNotFoundException;
-import ensias.ma.gl.secondyear.twentyfour.econutri.exception.IncorrectPasswordException;
 import ensias.ma.gl.secondyear.twentyfour.econutri.model.User;
 import ensias.ma.gl.secondyear.twentyfour.econutri.request.JwtCreationRequest;
+import ensias.ma.gl.secondyear.twentyfour.econutri.exception.EmailNotFoundException;
+import ensias.ma.gl.secondyear.twentyfour.econutri.exception.IncorrectPasswordException;
+import ensias.ma.gl.secondyear.twentyfour.econutri.exception.JwtVerificationException;
 
 
 @Component
@@ -34,7 +37,6 @@ public class JwtService {
         this.signingKey = signingKey;
         this.jwtLifespanInHours = jwtLifespan;
         this.userService = userService;
-
     }
 
 
@@ -57,5 +59,29 @@ public class JwtService {
             .compact();
 
         return jwt;
+    }
+
+
+    public User extractUserFromJwt(String jwt) throws JwtVerificationException  {
+
+        try {
+            String userEmail = Jwts.parser()
+                .verifyWith(getSecretKey())
+                .build()
+                .parseSignedClaims(jwt)
+                .getPayload()
+                .get("sub", String.class);
+
+                return this.userService.findUserByEmail(userEmail);
+                
+        } catch(JwtException | IllegalArgumentException | EmailNotFoundException e) {
+            throw new JwtVerificationException(e.getMessage());
+        }
+
+    }
+
+
+    private SecretKey getSecretKey() {
+        return Keys.hmacShaKeyFor(this.signingKey.getBytes(StandardCharsets.UTF_8));
     }
 }

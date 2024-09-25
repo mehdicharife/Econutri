@@ -8,6 +8,8 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
 
+import ensias.ma.gl.secondyear.twentyfour.econutri.visitor.UserVisitor;
+
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -57,4 +59,6 @@ public abstract class User {
         this.password = password;
     }
 
+
+    public abstract void accept(UserVisitor userVisitor);
 }
