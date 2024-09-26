@@ -3,14 +3,16 @@ package ensias.ma.gl.secondyear.twentyfour.econutri.service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import jakarta.transaction.Transactional;
 
 import org.springframework.stereotype.Component;
 
+import ensias.ma.gl.secondyear.twentyfour.econutri.exception.NonMerchantUserException;
 import ensias.ma.gl.secondyear.twentyfour.econutri.exception.OfferCreationException;
+import ensias.ma.gl.secondyear.twentyfour.econutri.exception.OfferIdNotFoundException;
 import ensias.ma.gl.secondyear.twentyfour.econutri.exception.ProductIdNotFoundException;
-import ensias.ma.gl.secondyear.twentyfour.econutri.exception.ProductNameAlreadyExistsException;
 import ensias.ma.gl.secondyear.twentyfour.econutri.exception.ProductNameNotFoundException;
 import ensias.ma.gl.secondyear.twentyfour.econutri.exception.problem.OfferProblem;
 import ensias.ma.gl.secondyear.twentyfour.econutri.exception.property.OfferProperty;
@@ -20,6 +22,7 @@ import ensias.ma.gl.secondyear.twentyfour.econutri.model.Product;
 import ensias.ma.gl.secondyear.twentyfour.econutri.model.User;
 import ensias.ma.gl.secondyear.twentyfour.econutri.repository.OfferRepository;
 import ensias.ma.gl.secondyear.twentyfour.econutri.request.OfferCreationRequest;
+import ensias.ma.gl.secondyear.twentyfour.econutri.visitor.UserRoleGetter;
 
 
 
@@ -30,28 +33,29 @@ public class OfferService {
 
     private ProductService productService;
 
-    public OfferService(OfferRepository offerRepository, ProductService productService) {
+    private UserRoleGetter userRoleGetter;
+
+
+    public OfferService(OfferRepository offerRepository,
+                        ProductService productService,
+                        UserRoleGetter userRoleGetter) {
+
         this.offerRepository = offerRepository;
         this.productService = productService;
+        this.userRoleGetter = userRoleGetter;
     }
 
-    
+
+
     @Transactional
     public Offer createOffer(User requester, OfferCreationRequest request) 
-        throws OfferCreationException, 
-               ProductNameAlreadyExistsException,
-               ProductIdNotFoundException          
-    {
+        throws OfferCreationException, NonMerchantUserException    {
 
-        validateOfferCreationRequest(request);
-
-
-        Product product;
-        if(request.getProductId() != null) {
-            product = this.productService.getProductById(request.getProductId());
-        } else {
-            product = this.productService.createProduct(request.getProductName(), request.getProductImage());
+        if(!"MERCHANT".equals(userRoleGetter.getUserRole(requester))) {
+            throw new NonMerchantUserException(requester);
         }
+        
+        Product product = validateOfferCreationRequest(request);
 
         Offer offer = new Offer();
         offer.setProduct(product);
@@ -65,8 +69,21 @@ public class OfferService {
     }
 
 
+    public List<Offer> getAllOffers() {
+        return this.offerRepository.findAll();
+    }
 
-    private void validateOfferCreationRequest(OfferCreationRequest request) throws OfferCreationException {
+    public Offer getOfferById(Long offerId) throws OfferIdNotFoundException {
+        Optional<Offer> optionalOffer = this.offerRepository.findById(offerId);
+        if(optionalOffer.isEmpty()) {
+            throw new OfferIdNotFoundException(offerId);
+        }
+
+        return optionalOffer.get();
+    }
+
+
+    private Product validateOfferCreationRequest(OfferCreationRequest request) throws OfferCreationException {
         List<OfferProblem> offerProblems = new ArrayList<>();
 
         Date expirationDate = request.getExpirationDate();
@@ -93,7 +110,9 @@ public class OfferService {
 
         Long productId = request.getProductId();
         String productName = request.getProductName();
+        Product product = null;
         if(productId == null && productName == null) {
+
             OfferProblem problem = new OfferProblem(
                 List.of(OfferProperty.productId, OfferProperty.productName),
                 "Either the product name or identifier must be provided."
@@ -101,7 +120,7 @@ public class OfferService {
             offerProblems.add(problem);
         } else if(productId != null) {
             try {
-                this.productService.getProductById(productId);
+                product = this.productService.getProductById(productId);
             } catch(ProductIdNotFoundException exception) {
                 OfferProblem productIdProblem = OfferProblem.singlePropertyProblem(
                     OfferProperty.productId, 
@@ -111,16 +130,20 @@ public class OfferService {
             }
         } else if(productName != null) {
             try {
-                productService.getProductByName(productName);
+                product = productService.getProductByName(productName);
                 OfferProblem problem = OfferProblem.singlePropertyProblem(OfferProperty.productName, "The product name " + productName + " already exists");
                 offerProblems.add(problem);
-            } catch(ProductNameNotFoundException exception) { System.out.println(""); }
+            } catch(ProductNameNotFoundException exception) { 
+                product = new Product(productName, productName);
+             }
         }
 
         
         if(!offerProblems.isEmpty()) {
             throw new OfferCreationException(offerProblems);
         }
+
+        return product;
 
     }
 

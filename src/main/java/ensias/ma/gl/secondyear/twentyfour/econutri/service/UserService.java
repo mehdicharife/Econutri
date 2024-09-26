@@ -27,7 +27,7 @@ public class UserService {
     // The password of newUser should be unencoded
     public User createUser(User newUser) throws EmailTakenException{
         try {
-            User user =  this.findUserByEmail(newUser.getEmail());
+            this.findUserByEmail(newUser.getEmail());
             throw new EmailTakenException(newUser.getEmail());
 
         } catch(EmailNotFoundException exception) {

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public final class UserRoleGetter implements UserVisitor {
     
-    private ThreadLocal<String> cachedRole;
+    private ThreadLocal<String> cachedRole = new ThreadLocal<>();
 
     public String getUserRole(User user) {
         user.accept(this);
