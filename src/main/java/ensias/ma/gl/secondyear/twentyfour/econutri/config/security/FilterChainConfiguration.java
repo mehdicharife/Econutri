@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import ensias.ma.gl.secondyear.twentyfour.econutri.config.security.filter.JwtBearerFilter;
 
@@ -28,7 +29,10 @@ public class FilterChainConfiguration {
             .addFilterAt(jwtBearerFilter, UsernamePasswordAuthenticationFilter.class)
             .csrf(CsrfConfigurer::disable)
             .authorizeHttpRequests(
-                request -> request.requestMatchers("/jwts", "/jwts/").permitAll()
+                request -> request
+                    .requestMatchers("/jwts", "/jwts/").permitAll()
+                    .requestMatchers(new AntPathRequestMatcher("/users", "POST"),
+                                     new AntPathRequestMatcher("/users/", "POST")).permitAll()
                     .anyRequest().authenticated()
             )   
             .build();

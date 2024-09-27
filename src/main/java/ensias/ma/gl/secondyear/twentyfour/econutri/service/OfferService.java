@@ -59,12 +59,12 @@ public class OfferService {
 
         Offer offer = new Offer();
         offer.setProduct(product);
+        offer.setPublisher((Merchant) requester);
         offer.setUnitPrice(request.getUnitPrice());
         offer.setExpirationDate(request.getExpirationDate());
         offer.setAvailableQuantity(request.getAvailableQuantity());
         offer.setDescription(request.getDescription());
-        offer.setPublisher((Merchant) requester);
-
+        
         return this.offerRepository.save(offer);
     }
 

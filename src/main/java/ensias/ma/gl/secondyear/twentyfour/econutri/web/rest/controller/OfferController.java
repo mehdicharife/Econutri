@@ -14,7 +14,7 @@ import org.springframework.security.core.Authentication;
 
 import ensias.ma.gl.secondyear.twentyfour.econutri.exception.NonMerchantUserException;
 import ensias.ma.gl.secondyear.twentyfour.econutri.exception.OfferIdNotFoundException;
-import ensias.ma.gl.secondyear.twentyfour.econutri.mapper.OfferMapper;
+import ensias.ma.gl.secondyear.twentyfour.econutri.mapper.OfferResponseMapper;
 import ensias.ma.gl.secondyear.twentyfour.econutri.model.Offer;
 import ensias.ma.gl.secondyear.twentyfour.econutri.model.User;
 import ensias.ma.gl.secondyear.twentyfour.econutri.request.OfferCreationRequest;
@@ -28,9 +28,9 @@ public class OfferController {
     
     private OfferService offerService;
     
-    private OfferMapper offerMapper;
+    private OfferResponseMapper offerMapper;
 
-    public OfferController(OfferService offerService, OfferMapper offerMapper) {
+    public OfferController(OfferService offerService, OfferResponseMapper offerMapper) {
         this.offerService = offerService;
         this.offerMapper = offerMapper;
     }
@@ -44,7 +44,8 @@ public class OfferController {
 
         try {
             Offer offer = this.offerService.createOffer(user, offerCreationRequest);
-            return new ResponseEntity<>(offer, HttpStatus.CREATED);
+            OfferResponse offerDto = this.offerMapper.toDto(offer);
+            return new ResponseEntity<>(offerDto, HttpStatus.CREATED);
 
         } catch(NonMerchantUserException ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);

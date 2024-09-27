@@ -8,7 +8,7 @@ import ensias.ma.gl.secondyear.twentyfour.econutri.response.OfferResponse;
 
 
 @Component
-public class OfferMapper {
+public class OfferResponseMapper {
 
 
     public OfferResponse toDto(Offer offer) {
