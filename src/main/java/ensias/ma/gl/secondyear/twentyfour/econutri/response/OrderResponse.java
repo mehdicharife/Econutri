@@ -11,6 +11,8 @@ public class OrderResponse {
 
     private Long quantity;
 
+    private String state;
+
 
     public Long getId() {
         return this.id;
@@ -43,5 +45,14 @@ public class OrderResponse {
     public void setQuantity(Long quantity) {
         this.quantity = quantity;
     }
+
+    public String getState() {
+        return this.state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
 
 }

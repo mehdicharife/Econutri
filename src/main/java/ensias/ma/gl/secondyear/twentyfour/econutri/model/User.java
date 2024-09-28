@@ -9,6 +9,7 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
 
 import ensias.ma.gl.secondyear.twentyfour.econutri.visitor.UserVisitor;
+import java.util.Objects;
 
 
 @Entity
@@ -60,5 +61,29 @@ public abstract class User {
     }
 
 
+    @Override
+    public final boolean equals(Object other) {
+        if(this.id == null) {
+            return false;
+        }
+
+        if(other == null) {
+            return false;
+        }
+
+        if(!(other instanceof User)) {
+            return false;
+        }
+
+        User otherUser = (User) other;
+        if(otherUser.getId() == null) {
+            return false;
+        }
+
+        return this.id.equals(otherUser.getId());
+
+    }
+
+    
     public abstract void accept(UserVisitor userVisitor);
 }

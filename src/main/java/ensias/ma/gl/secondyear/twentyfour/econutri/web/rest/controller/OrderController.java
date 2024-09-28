@@ -1,9 +1,11 @@
 package ensias.ma.gl.secondyear.twentyfour.econutri.web.rest.controller;
 
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,6 +46,20 @@ public class OrderController {
         } catch(NonClientOrderCreationRequest ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
         }
+    }
+
+
+    @GetMapping
+    public ResponseEntity<List<OrderResponse>> getOrders(Authentication auth) {
+        
+        User user = (User) auth.getPrincipal();
+        
+        var ordersDtos = this.orderService.getOrders(user)
+            .stream()
+            .map(order -> this.orderMapper.toDto(order))
+            .toList();
+            
+        return ResponseEntity.ok(ordersDtos);
     }
 
 

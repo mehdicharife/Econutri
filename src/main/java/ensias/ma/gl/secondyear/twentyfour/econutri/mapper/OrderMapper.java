@@ -16,7 +16,8 @@ public class OrderMapper {
         dto.setClientId(order.getOrderer().getId());
         dto.setOfferId(order.getOffer().getId());
         dto.setQuantity(order.getProductQuantity());
-
+        dto.setState(order.getState().name());
+        
         return dto;
     }
     
