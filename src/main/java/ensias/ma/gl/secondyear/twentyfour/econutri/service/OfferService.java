@@ -14,6 +14,7 @@ import ensias.ma.gl.secondyear.twentyfour.econutri.exception.OfferCreationExcept
 import ensias.ma.gl.secondyear.twentyfour.econutri.exception.OfferIdNotFoundException;
 import ensias.ma.gl.secondyear.twentyfour.econutri.exception.ProductIdNotFoundException;
 import ensias.ma.gl.secondyear.twentyfour.econutri.exception.ProductNameNotFoundException;
+import ensias.ma.gl.secondyear.twentyfour.econutri.exception.StorageException;
 import ensias.ma.gl.secondyear.twentyfour.econutri.exception.problem.OfferProblem;
 import ensias.ma.gl.secondyear.twentyfour.econutri.exception.property.OfferProperty;
 import ensias.ma.gl.secondyear.twentyfour.econutri.model.Merchant;
@@ -35,21 +36,26 @@ public class OfferService {
 
     private UserRoleGetter userRoleGetter;
 
+    private StorageService storageService;
+
 
     public OfferService(OfferRepository offerRepository,
                         ProductService productService,
-                        UserRoleGetter userRoleGetter) {
+                        UserRoleGetter userRoleGetter,
+                        StorageService storageService) {
 
         this.offerRepository = offerRepository;
         this.productService = productService;
         this.userRoleGetter = userRoleGetter;
+        this.storageService = storageService;
+
     }
 
 
 
     @Transactional
     public Offer createOffer(User requester, OfferCreationRequest request) 
-        throws OfferCreationException, NonMerchantUserException    {
+        throws OfferCreationException, NonMerchantUserException, StorageException {
 
         if(!"MERCHANT".equals(userRoleGetter.getUserRole(requester))) {
             throw new NonMerchantUserException(requester);
@@ -64,6 +70,9 @@ public class OfferService {
         offer.setExpirationDate(request.getExpirationDate());
         offer.setAvailableQuantity(request.getAvailableQuantity());
         offer.setDescription(request.getDescription());
+
+        String productImagePath = this.storageService.saveFile(request.getProductImage());
+        product.setImage(productImagePath);
         
         return this.offerRepository.save(offer);
     }

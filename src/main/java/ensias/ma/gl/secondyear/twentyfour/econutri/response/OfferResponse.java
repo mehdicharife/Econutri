@@ -2,20 +2,24 @@ package ensias.ma.gl.secondyear.twentyfour.econutri.response;
 
 import java.util.Date;
 
+import ensias.ma.gl.secondyear.twentyfour.econutri.model.Product;
+
 
 public class OfferResponse {
 
     private Long id;
 
-    private Long productId;
+    private Product product;
 
-    private Long publisherId;
+    private Double unitPrice;
 
     private Date expirationDate;
 
     private Long availableQuantity;
 
     private String description;
+
+    private Long publisherId;
 
 
     public Long getId() {
@@ -26,12 +30,20 @@ public class OfferResponse {
         this.id = id;
     }
 
-    public Long getProductId() {
-        return this.productId;
+    public Product getProduct() {
+        return this.product;
     }
 
-    public void setProductId(Long productId) {
-        this.productId = productId;
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public Double getUnitPrice() {
+        return this.unitPrice;
+    }
+
+    public void setUnitPrice(Double unitPrice) {
+        this.unitPrice = unitPrice;
     }
 
     public Long getPublisherId() {
@@ -41,7 +53,6 @@ public class OfferResponse {
     public void setPublisherId(Long publisherId) {
         this.publisherId = publisherId;
     }
-
 
     public Date getExpirationDate() {
         return this.expirationDate;

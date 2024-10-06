@@ -2,6 +2,8 @@ package ensias.ma.gl.secondyear.twentyfour.econutri.request;
 
 import java.util.Date;
 
+import org.springframework.web.multipart.MultipartFile;
+
 
 public class OfferCreationRequest {
     
@@ -9,7 +11,7 @@ public class OfferCreationRequest {
 
     private String productName;
 
-    private String productImage;
+    private MultipartFile productImage;
 
     private Double unitPrice;
 
@@ -20,6 +22,7 @@ public class OfferCreationRequest {
     private String description;
 
 
+    
     public Long getProductId() {
         return this.productId;
     }
@@ -36,13 +39,14 @@ public class OfferCreationRequest {
         this.productName = productName;
     }
 
-    public String getProductImage() {
+    public MultipartFile getProductImage() {
         return this.productImage;
     }
 
-    public void setProductImage(String productImage) {
+    public void setProductImage(MultipartFile productImage) {
         this.productImage = productImage;
     }
+
 
     public Double getUnitPrice() {
         return this.unitPrice;

@@ -1,10 +1,10 @@
 package ensias.ma.gl.secondyear.twentyfour.econutri.service;
 
 import java.util.Date;
+import java.nio.charset.StandardCharsets;
 
 import javax.crypto.SecretKey;
 
-import java.nio.charset.StandardCharsets;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

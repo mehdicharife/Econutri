@@ -7,19 +7,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.security.core.Authentication;
 
 import ensias.ma.gl.secondyear.twentyfour.econutri.exception.NonMerchantUserException;
 import ensias.ma.gl.secondyear.twentyfour.econutri.exception.OfferIdNotFoundException;
-import ensias.ma.gl.secondyear.twentyfour.econutri.mapper.OfferResponseMapper;
+import ensias.ma.gl.secondyear.twentyfour.econutri.exception.StorageException;
+import ensias.ma.gl.secondyear.twentyfour.econutri.mapper.OfferMapper;
 import ensias.ma.gl.secondyear.twentyfour.econutri.model.Offer;
 import ensias.ma.gl.secondyear.twentyfour.econutri.model.User;
 import ensias.ma.gl.secondyear.twentyfour.econutri.request.OfferCreationRequest;
 import ensias.ma.gl.secondyear.twentyfour.econutri.response.OfferResponse;
 import ensias.ma.gl.secondyear.twentyfour.econutri.service.OfferService;
+
 
 
 @RestController
@@ -28,19 +31,21 @@ public class OfferController {
     
     private OfferService offerService;
     
-    private OfferResponseMapper offerMapper;
+    private OfferMapper offerMapper;
 
-    public OfferController(OfferService offerService, OfferResponseMapper offerMapper) {
+    public OfferController(OfferService offerService, OfferMapper offerMapper) {
         this.offerService = offerService;
         this.offerMapper = offerMapper;
     }
 
 
     @PostMapping
-    public ResponseEntity<?> publishOffer(@RequestBody OfferCreationRequest offerCreationRequest,
+    public ResponseEntity<?> publishOffer(OfferCreationRequest offerCreationRequest,
+            @RequestParam("productImage") MultipartFile image,
             Authentication authentication) throws Exception {
         
         User user = (User) authentication.getPrincipal();
+        offerCreationRequest.setProductImage(image);
 
         try {
             Offer offer = this.offerService.createOffer(user, offerCreationRequest);
@@ -49,8 +54,13 @@ public class OfferController {
 
         } catch(NonMerchantUserException ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
+
+        }  catch(StorageException storageException) {
+            storageException.printStackTrace();
+            return ResponseEntity.internalServerError().body(storageException.getMessage());
         }
     }
+
 
 
     @GetMapping

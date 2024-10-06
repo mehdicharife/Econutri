@@ -19,22 +19,26 @@ public abstract class OrderTransitionPermissionVerifier implements UserVisitor {
         return canUserInduceTransition.get();
     }
 
+    @Override
     public final void visitAdmin(Admin admin) {
         boolean canUserInduceTransition = this.canAdminInduceOrderTransition(admin, cachedOrder.get());
         this.canUserInduceTransition.set(canUserInduceTransition);
     }
 
+    @Override
     public final void visitClient(Client client) {
         boolean canUserInduceTransition = this.canClientInduceOrderTransition(client, cachedOrder.get());
         this.canUserInduceTransition.set(canUserInduceTransition);
     }
 
+    @Override
     public final void visitMerchant(Merchant merchant) {
         boolean canUserInduceTransition = this.canMerchantInduceOrderTransition(merchant, cachedOrder.get());
         this.canUserInduceTransition.set(canUserInduceTransition);
     }
 
 
+    // Default implementations. 
     public boolean canMerchantInduceOrderTransition(Merchant merchant, Order order) {
         return false;
     }

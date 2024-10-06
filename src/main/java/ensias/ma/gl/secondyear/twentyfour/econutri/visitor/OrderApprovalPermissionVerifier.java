@@ -8,6 +8,7 @@ import ensias.ma.gl.secondyear.twentyfour.econutri.model.Order;
 @Component
 public class OrderApprovalPermissionVerifier extends OrderTransitionPermissionVerifier {
     
+    @Override
     public boolean canMerchantInduceOrderTransition(Merchant merchant, Order order) {
         return order.getOffer().getPublisher().equals(merchant);
     }
